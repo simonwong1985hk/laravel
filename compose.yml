@@ -1,0 +1,68 @@
+services:
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      target: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/var/www/html:delegated
+    tty: true
+    depends_on:
+      - php
+    networks:
+      - laravel
+
+  php:
+    container_name: php
+    build:
+      context: .
+      target: php
+    volumes:
+      - ./:/var/www/html:delegated
+    tty: true
+    depends_on:
+      - mysql
+    networks:
+      - laravel
+
+  mysql:
+    container_name: mysql
+    build:
+      context: .
+      target: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ${DB_DATABASE:-laravel}
+      MYSQL_USER: ${DB_USERNNAME:-user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+    volumes:
+      - mysql:/var/lib/mysql
+    tty: true
+    networks:
+      - laravel
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    build:
+      context: .
+      target: phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: ${DB_USERNNAME:-user}
+      PMA_PASSWORD: ${DB_PASSWORD:-password}
+    tty: true
+    depends_on:
+      - mysql
+    networks:
+      - laravel
+
+networks:
+  laravel:
+    driver: bridge
+volumes:
+  mysql:
+    driver: local
