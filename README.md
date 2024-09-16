@@ -1,2 +1,2 @@
 ## Local Deployment (Docker)
-`make up`
+`make`

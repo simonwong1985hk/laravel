@@ -1,7 +1,7 @@
 # nginx
 FROM nginx:stable-alpine AS nginx
-ENV UID=${UID:-777}
-ENV GID=${GID:-777}
+ENV UID=${UID:-1000}
+ENV GID=${GID:-1000}
 ENV USER=${USER:-laravel}
 ENV GROUP=${GROUP:-laravel}
 RUN addgroup -g ${GID} --system ${GROUP}
@@ -13,8 +13,8 @@ WORKDIR /var/www/html
 # php
 FROM php:fpm-alpine AS php
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
-ENV UID=${UID:-777}
-ENV GID=${GID:-777}
+ENV UID=${UID:-1000}
+ENV GID=${GID:-1000}
 ENV USER=${USER:-laravel}
 ENV GROUP=${GROUP:-laravel}
 RUN addgroup -g ${GID} --system ${GROUP}

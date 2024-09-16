@@ -34,9 +34,7 @@ services:
       target: mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: ${DB_DATABASE:-laravel}
-      MYSQL_USER: ${DB_USERNNAME:-user}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_DATABASE: ${DB_DATABASE}
     volumes:
       - mysql:/var/lib/mysql
     tty: true
@@ -52,8 +50,8 @@ services:
       - "8080:80"
     environment:
       PMA_HOST: mysql
-      PMA_USER: ${DB_USERNNAME:-user}
-      PMA_PASSWORD: ${DB_PASSWORD:-password}
+      PMA_USER: ${DB_USERNAME}
+      PMA_PASSWORD: ${DB_PASSWORD}
     tty: true
     depends_on:
       - mysql

@@ -1,4 +1,4 @@
-up:
+all:
 	cp .env.example .env
 	docker compose up -d
 	docker exec php /bin/sh -c "composer install"
