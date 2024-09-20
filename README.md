@@ -1,2 +1,3 @@
 ## Local Deployment (Docker)
-`make`
+
+`cp .env.example .env && make`

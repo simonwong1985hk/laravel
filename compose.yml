@@ -1,21 +1,21 @@
 services:
   nginx:
-    container_name: nginx
+    container_name: ${APP_NAME}-nginx
     build:
       context: .
       target: nginx
     ports:
-      - "80:80"
+      - "${NGINX_PORT}:80"
     volumes:
       - ./:/var/www/html:delegated
     tty: true
     depends_on:
       - php
     networks:
-      - laravel
+      - custom_network
 
   php:
-    container_name: php
+    container_name: ${APP_NAME}-php
     build:
       context: .
       target: php
@@ -25,29 +25,29 @@ services:
     depends_on:
       - mysql
     networks:
-      - laravel
+      - custom_network
 
   mysql:
-    container_name: mysql
+    container_name: ${APP_NAME}-mysql
     build:
       context: .
       target: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
     volumes:
-      - mysql:/var/lib/mysql
+      - custom_volume:/var/lib/mysql
     tty: true
     networks:
-      - laravel
+      - custom_network
 
   phpmyadmin:
-    container_name: phpmyadmin
+    container_name: ${APP_NAME}-phpmyadmin
     build:
       context: .
       target: phpmyadmin
     ports:
-      - "8080:80"
+      - "${PHPMYADMIN_PORT}:80"
     environment:
       PMA_HOST: mysql
       PMA_USER: ${DB_USERNAME}
@@ -56,11 +56,11 @@ services:
     depends_on:
       - mysql
     networks:
-      - laravel
+      - custom_network
 
 networks:
-  laravel:
-    driver: bridge
+  custom_network:
+    name: ${APP_NAME}-network
 volumes:
-  mysql:
-    driver: local
+  custom_volume:
+    name: ${APP_NAME}-volume
