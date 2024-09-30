@@ -11,7 +11,7 @@ ADD ./nginx.conf /etc/nginx/conf.d/default.conf
 WORKDIR /var/www/html
 
 # php
-FROM php:fpm-alpine AS php
+FROM php:fpm-alpine3.19 AS php
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 ENV UID=${UID:-1000}
 ENV GID=${GID:-1000}
@@ -23,7 +23,7 @@ RUN sed -i "s/user = www-data/user = ${USER}/g" /usr/local/etc/php-fpm.d/www.con
 RUN sed -i "s/group = www-data/group = ${GROUP}/g" /usr/local/etc/php-fpm.d/www.conf
 RUN apk update
 RUN apk upgrade
-RUN apk add --no-cache git nodejs npm
+RUN apk add --no-cache chromium git nodejs npm
 RUN docker-php-ext-install exif
 RUN apk add --no-cache libpng-dev libjpeg-turbo-dev freetype-dev
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
