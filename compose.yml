@@ -5,12 +5,29 @@ services:
       context: .
       target: nginx
     ports:
-      - "${NGINX_PORT}:80"
+      - "${HTTP_PORT}:80"
+      - "${HTTPS_PORT}:443"
     volumes:
       - ./:/var/www/html:delegated
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:delegated
+      - certbot:/etc/letsencrypt
     tty: true
     depends_on:
       - php
+    networks:
+      - custom_network
+
+  certbot:
+    container_name: ${APP_NAME}-certbot
+    build:
+      context: .
+      target: certbot
+    command: certonly --webroot --webroot-path=/var/www/html --email ${EMAIL} --agree-tos --no-eff-email --force-renewal -d ${DOMAIN}
+    volumes:
+      - ./:/var/www/html:delegated
+      - certbot:/etc/letsencrypt
+    depends_on:
+      - nginx
     networks:
       - custom_network
 
@@ -64,3 +81,5 @@ networks:
 volumes:
   custom_volume:
     name: ${APP_NAME}-volume
+  certbot:
+    name: ${APP_NAME}-certbot

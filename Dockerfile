@@ -7,8 +7,10 @@ ENV GROUP=${GROUP:-laravel}
 RUN addgroup -g ${GID} --system ${GROUP}
 RUN adduser -u ${UID} --system ${USER} -G ${GROUP} -D -s /bin/sh
 RUN sed -i "s/user  nginx/user ${USER}/g" /etc/nginx/nginx.conf
-ADD ./nginx.conf /etc/nginx/conf.d/default.conf
 WORKDIR /var/www/html
+
+# certbot
+FROM certbot/certbot AS certbot
 
 # php
 FROM php:fpm-alpine3.19 AS php
