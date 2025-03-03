@@ -1,14 +1,12 @@
 #!/bin/bash
 
-SCRIPT_PATH=$(realpath "$0")
+APP_DIR="$(git rev-parse --show-toplevel)"
 
-SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
+cp "$APP_DIR/.env.example" "$APP_DIR/.env"
 
-ENV_FILE="$SCRIPT_DIR/../.env"
+ENV_FILE="$APP_DIR/.env"
 
-cp "$SCRIPT_DIR/../.env.example" "$ENV_FILE"
-
-source "$ENV_FILE"
+. "$ENV_FILE"
 
 if [ "$(uname -s)" = 'Darwin' ]; then
     sed -i '' 's/DB_CONNECTION=sqlite/DB_CONNECTION=mysql/' "$ENV_FILE"
@@ -29,7 +27,7 @@ fi
 
 APP_NAME=$(echo "$APP_NAME" | tr 'A-Z' 'a-z')
 
-docker compose -f "$SCRIPT_DIR/compose.yml" -p "$APP_NAME" up -d
+docker compose -f "$APP_DIR/docker/compose.yml" -p "$APP_NAME" up -d
 
 docker exec "$APP_NAME-php" /bin/sh -c "composer install; php artisan key:generate; php artisan storage:link; php artisan migrate:fresh --seed --force; npm install; npm run build"
 
