@@ -1,3 +1,5 @@
+include .env
+
 all:
 	@git config user.name "Simon Wong"
 	@git config user.email "simonwong1985hk@gmail.com"
@@ -10,7 +12,13 @@ all:
 	@git merge upstream/12.x --no-edit
 
 up:
-	@sh ./docker/up
+	@docker compose -f ./compose.local.yml up  -d
+	@docker exec $(APP_ID)-php /bin/sh -c "composer install"
+	@docker exec $(APP_ID)-php /bin/sh -c "php artisan key:generate"
+	@docker exec $(APP_ID)-php /bin/sh -c "php artisan storage:link"
+	@docker exec $(APP_ID)-php /bin/sh -c "php artisan migrate:fresh --seed --force"
+	@docker exec $(APP_ID)-php /bin/sh -c "npm install"
+	@docker exec $(APP_ID)-php /bin/sh -c "npm run build"
 
 php:
-	@docker exec -it "laravel-php" /bin/sh
+	@docker exec -it $(APP_ID)-php /bin/sh

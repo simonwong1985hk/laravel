@@ -12,6 +12,10 @@ WORKDIR /var/www/html
 # php
 FROM php:fpm-alpine AS php
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
+ENV UPLOAD_MAX_FILESIZE=10M
+ENV POST_MAX_SIZE=20M
+RUN echo "upload_max_filesize=${UPLOAD_MAX_FILESIZE}" >> /usr/local/etc/php/conf.d/uploads.ini
+RUN echo "post_max_size=${POST_MAX_SIZE}" >> /usr/local/etc/php/conf.d/uploads.ini
 ENV UID=${UID:-1000}
 ENV GID=${GID:-1000}
 ENV USER=${USER:-laravel}
