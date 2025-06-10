@@ -8,6 +8,8 @@ all:
 	@git remote get-url upstream > /dev/null 2>&1 || git remote add upstream https://github.com/laravel/laravel.git
 	@git remote -v
 	@echo
+
+merge-upstream:
 	@git fetch upstream > /dev/null 2>&1
 	@git merge upstream/12.x --no-edit
 
