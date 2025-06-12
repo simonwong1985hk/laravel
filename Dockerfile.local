@@ -36,6 +36,9 @@ RUN docker-php-ext-install intl
 RUN docker-php-ext-install pdo_mysql
 RUN apk add --no-cache libzip-dev
 RUN docker-php-ext-install zip
+RUN apk add --no-cache autoconf build-base
+RUN pecl install pcov
+RUN docker-php-ext-enable pcov
 WORKDIR /var/www/html
 USER ${USER}
 
