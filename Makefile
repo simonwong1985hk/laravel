@@ -33,3 +33,6 @@ up-production:
 
 php:
 	@docker exec -it $(APP_ID)-php /bin/sh
+
+tinker:
+	@docker exec -it $(APP_ID)-php /bin/sh -c "php artisan tinker"
