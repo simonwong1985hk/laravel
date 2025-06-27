@@ -31,6 +31,13 @@ up-production:
 	@docker exec $(APP_ID)-php /bin/sh -c "npm install"
 	@docker exec $(APP_ID)-php /bin/sh -c "npm run build"
 
+down:
+	@docker container stop laravel-nginx laravel-php laravel-phpmyadmin laravel-mysql laravel-mailpit
+	@docker container rm laravel-nginx laravel-php laravel-phpmyadmin laravel-mysql laravel-mailpit
+	@docker image rm laravel-nginx laravel-php laravel-phpmyadmin laravel-mysql laravel-mailpit
+	@docker volume rm laravel-volume
+	@docker network rm laravel-network
+
 php:
 	@docker exec -it $(APP_ID)-php /bin/sh
 
