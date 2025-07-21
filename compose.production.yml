@@ -5,8 +5,6 @@ services:
       - "traefik.http.routers.laravel-nginx.rule=Host(`laravel.hkit.pro`)"
       - "traefik.http.routers.laravel-nginx.entrypoints=websecure"
       - "traefik.http.routers.laravel-nginx.tls.certresolver=myresolver"
-      # - "traefik.http.routers.laravel-nginx.tls=true"
-      # - "traefik.http.services.laravel-nginx.loadbalancer.server.port=80"
     container_name: laravel-nginx
     image: laravel-nginx
     build:
@@ -62,8 +60,6 @@ services:
       - "traefik.http.routers.laravel-phpmyadmin.rule=Host(`laravel.db.hkit.pro`)"
       - "traefik.http.routers.laravel-phpmyadmin.entrypoints=websecure"
       - "traefik.http.routers.laravel-phpmyadmin.tls.certresolver=myresolver"
-      # - "traefik.http.routers.laravel-phpmyadmin.tls=true"
-      # - "traefik.http.services.laravel-phpmyadmin.loadbalancer.server.port=80"
     container_name: laravel-phpmyadmin
     image: laravel-phpmyadmin
     build:
