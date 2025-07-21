@@ -1,24 +1,29 @@
 services:
-  nginx:
-    container_name: ${APP_ID}-nginx
+  laravel-nginx:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.laravel-nginx.rule=Host(`laravel.localhost`)"
+      - "traefik.http.routers.laravel-nginx.entrypoints=web"
+      - "traefik.http.services.laravel-nginx.loadbalancer.server.port=80"
+    container_name: laravel-nginx
+    image: laravel-nginx
     build:
       context: .
       dockerfile: Dockerfile.local
       target: nginx
-    ports:
-      - "${HTTP_PORT}:80"
     volumes:
       - ./:/var/www/html:delegated
       - ./nginx.local.conf:/etc/nginx/conf.d/default.conf:delegated
     restart: always
     tty: true
     depends_on:
-      - php
+      - laravel-php
     networks:
-      - custom_network
+      - proxy
 
-  php:
-    container_name: ${APP_ID}-php
+  laravel-php:
+    container_name: laravel-php
+    image: laravel-php
     build:
       context: .
       dockerfile: Dockerfile.local
@@ -28,12 +33,13 @@ services:
     restart: always
     tty: true
     depends_on:
-      - mysql
+      - laravel-mysql
     networks:
-      - custom_network
+      - proxy
 
-  mysql:
-    container_name: ${APP_ID}-mysql
+  laravel-mysql:
+    container_name: laravel-mysql
+    image: laravel-mysql
     build:
       context: .
       dockerfile: Dockerfile.local
@@ -42,48 +48,56 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
     volumes:
-      - custom_volume:/var/lib/mysql
+      - database:/var/lib/mysql
     restart: always
     tty: true
     networks:
-      - custom_network
+      - proxy
 
-  phpmyadmin:
-    container_name: ${APP_ID}-phpmyadmin
+  laravel-phpmyadmin:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.laravel-phpmyadmin.rule=Host(`laravel.db.localhost`)"
+      - "traefik.http.routers.laravel-phpmyadmin.entrypoints=web"
+      - "traefik.http.services.laravel-phpmyadmin.loadbalancer.server.port=80"
+    container_name: laravel-phpmyadmin
+    image: laravel-phpmyadmin
     build:
       context: .
       dockerfile: Dockerfile.local
       target: phpmyadmin
-    ports:
-      - "${PHPMYADMIN_PORT}:80"
     environment:
-      PMA_HOST: mysql
+      PMA_HOST: laravel-mysql
       PMA_USER: ${DB_USERNAME}
       PMA_PASSWORD: ${DB_PASSWORD}
     restart: always
     tty: true
     depends_on:
-      - mysql
+      - laravel-mysql
     networks:
-      - custom_network
+      - proxy
 
-  mailpit:
-    container_name: ${APP_ID}-mailpit
+  laravel-mailpit:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.laravel-mailpit.rule=Host(`laravel.mail.localhost`)"
+      - "traefik.http.routers.laravel-mailpit.entrypoints=web"
+      - "traefik.http.services.laravel-mailpit.loadbalancer.server.port=8025"
+    container_name: laravel-mailpit
+    image: laravel-mailpit
     build:
       context: .
       dockerfile: Dockerfile.local
       target: mailpit
-    ports:
-      - "${SMTP_PORT}:1025"
-      - "${MAILPIT_PORT}:8025"
     restart: always
     tty: true
     networks:
-      - custom_network
+      - proxy
+
+volumes:
+  database:
+    name: laravel-db
 
 networks:
-  custom_network:
-    name: ${APP_ID}-network
-volumes:
-  custom_volume:
-    name: ${APP_ID}-volume
+  proxy:
+    external: true

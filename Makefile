@@ -1,45 +1,52 @@
 include .env
 
-all:
+NAME = $(shell echo $(APP_NAME) | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+
+me:
 	@git config user.name "Simon Wong"
 	@git config user.email "simonwong1985hk@gmail.com"
-	@git config --list --local
-	@echo
-	@git remote get-url upstream > /dev/null 2>&1 || git remote add upstream https://github.com/laravel/laravel.git
-	@git remote -v
-	@echo
+	@git config list --local
 
 merge-upstream:
+	@git remote get-url upstream > /dev/null 2>&1 || git remote add upstream https://github.com/laravel/laravel.git
+	@git remote -v
 	@git fetch upstream > /dev/null 2>&1
 	@git merge upstream/12.x --no-edit
 
-up-local:
+local:
 	@docker compose -f ./compose.local.yml up  -d
-	@docker exec $(APP_ID)-php /bin/sh -c "composer install"
-	@docker exec $(APP_ID)-php /bin/sh -c "php artisan key:generate"
-	@docker exec $(APP_ID)-php /bin/sh -c "php artisan storage:link"
-	@docker exec $(APP_ID)-php /bin/sh -c "php artisan migrate:fresh --seed --force"
-	@docker exec $(APP_ID)-php /bin/sh -c "npm install"
-	@docker exec $(APP_ID)-php /bin/sh -c "npm run build"
+	@docker exec $(NAME)-php /bin/sh -c "composer install"
+	@docker exec $(NAME)-php /bin/sh -c "php artisan key:generate"
+	@docker exec $(NAME)-php /bin/sh -c "php artisan storage:link"
+	@docker exec $(NAME)-php /bin/sh -c "php artisan migrate:fresh --seed --force"
+	@docker exec $(NAME)-php /bin/sh -c "npm install"
+	@docker exec $(NAME)-php /bin/sh -c "npm run build"
 
 up-production:
 	@docker compose -f ./compose.production.yml up  -d
-	@docker exec $(APP_ID)-php /bin/sh -c "composer install"
-	@docker exec $(APP_ID)-php /bin/sh -c "php artisan key:generate"
-	@docker exec $(APP_ID)-php /bin/sh -c "php artisan storage:link"
-	@docker exec $(APP_ID)-php /bin/sh -c "php artisan migrate:fresh --seed --force"
-	@docker exec $(APP_ID)-php /bin/sh -c "npm install"
-	@docker exec $(APP_ID)-php /bin/sh -c "npm run build"
+	@docker exec $(NAME)-php /bin/sh -c "composer install"
+	@docker exec $(NAME)-php /bin/sh -c "php artisan key:generate"
+	@docker exec $(NAME)-php /bin/sh -c "php artisan storage:link"
+	@docker exec $(NAME)-php /bin/sh -c "php artisan migrate:fresh --seed --force"
+	@docker exec $(NAME)-php /bin/sh -c "npm install"
+	@docker exec $(NAME)-php /bin/sh -c "npm run build"
 
-down:
-	@docker container stop laravel-nginx laravel-php laravel-phpmyadmin laravel-mysql laravel-mailpit
-	@docker container rm laravel-nginx laravel-php laravel-phpmyadmin laravel-mysql laravel-mailpit
-	@docker image rm laravel-nginx laravel-php laravel-phpmyadmin laravel-mysql laravel-mailpit
-	@docker volume rm laravel-volume
-	@docker network rm laravel-network
+list:
+	@echo "------------------------------------------CONTAINERS------------------------------------------"
+	@docker container ls
+	@echo "------------------------------------------IMAGES------------------------------------------"
+	@docker image ls
+	@echo "------------------------------------------VOLUMES------------------------------------------"
+	@docker volume ls
+	@echo "------------------------------------------NETWORKS------------------------------------------"
+	@docker network ls
 
 php:
-	@docker exec -it $(APP_ID)-php /bin/sh
+	@docker exec -it $(NAME)-php /bin/sh
 
-tinker:
-	@docker exec -it $(APP_ID)-php /bin/sh -c "php artisan tinker"
+down:
+	@docker container stop $(NAME)-nginx $(NAME)-php $(NAME)-phpmyadmin $(NAME)-mysql $(NAME)-mailpit 2>/dev/null || true
+	@docker container rm $(NAME)-nginx $(NAME)-php $(NAME)-phpmyadmin $(NAME)-mysql $(NAME)-mailpit 2>/dev/null || true
+	@docker image rm $(NAME)-nginx $(NAME)-php $(NAME)-phpmyadmin $(NAME)-mysql $(NAME)-mailpit 2>/dev/null || true
+	@docker volume rm $(NAME)-db 2>/dev/null || true
+	@docker network rm $(NAME)-network 2>/dev/null || true
