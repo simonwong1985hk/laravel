@@ -1,6 +1,6 @@
 include .env
 
-.PHONY: me mu local production list php down destroy
+.PHONY: me own mu local production list php down destroy
 
 NAME = $(shell echo $(APP_NAME) | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
 
