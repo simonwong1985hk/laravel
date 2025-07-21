@@ -9,6 +9,9 @@ me:
 	@git config user.email "simonwong1985hk@gmail.com"
 	@git config list --local
 
+own:
+	@chown -R $(USER):$(USER) .
+
 mu:
 	@git remote get-url upstream > /dev/null 2>&1 || git remote add upstream https://github.com/laravel/laravel.git
 	@git remote -v
