@@ -10,7 +10,7 @@ me:
 	@git config list --local
 
 own:
-	@chown -R $(USER):$(USER) .
+	@chown -R simon:simon .
 
 mu:
 	@git remote get-url upstream > /dev/null 2>&1 || git remote add upstream https://github.com/laravel/laravel.git
