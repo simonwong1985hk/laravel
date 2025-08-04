@@ -19,19 +19,19 @@ mu:
 	@git merge upstream/12.x --no-edit
 
 local:
-	@docker compose -f ./compose.local.yml up  -d
+	@docker compose -f ./compose.local.yaml up -d --build
 	@docker exec $(NAME)-php /bin/sh -c "composer install"
 	@docker exec $(NAME)-php /bin/sh -c "php artisan key:generate"
-	@docker exec $(NAME)-php /bin/sh -c "php artisan storage:link"
+	@docker exec $(NAME)-php /bin/sh -c "php artisan storage:link --force"
 	@docker exec $(NAME)-php /bin/sh -c "php artisan migrate:fresh --seed --force"
 	@docker exec $(NAME)-php /bin/sh -c "npm install"
 	@docker exec $(NAME)-php /bin/sh -c "npm run build"
 
 production:
-	@docker compose -f ./compose.production.yml up  -d
+	@docker compose -f ./compose.production.yaml up -d --build
 	@docker exec $(NAME)-php /bin/sh -c "composer install"
 	@docker exec $(NAME)-php /bin/sh -c "php artisan key:generate"
-	@docker exec $(NAME)-php /bin/sh -c "php artisan storage:link"
+	@docker exec $(NAME)-php /bin/sh -c "php artisan storage:link --force"
 	@docker exec $(NAME)-php /bin/sh -c "php artisan migrate:fresh --seed --force"
 	@docker exec $(NAME)-php /bin/sh -c "npm install"
 	@docker exec $(NAME)-php /bin/sh -c "npm run build"
@@ -53,8 +53,8 @@ down:
 	@docker container stop $(NAME)-nginx $(NAME)-php $(NAME)-phpmyadmin $(NAME)-mysql $(NAME)-mailpit 2>/dev/null || true
 	@docker container rm $(NAME)-nginx $(NAME)-php $(NAME)-phpmyadmin $(NAME)-mysql $(NAME)-mailpit 2>/dev/null || true
 	@docker image rm $(NAME)-nginx $(NAME)-php $(NAME)-phpmyadmin $(NAME)-mysql $(NAME)-mailpit 2>/dev/null || true
-	@docker volume rm $(NAME)-db 2>/dev/null || true
-	@docker network rm $(NAME)-network 2>/dev/null || true
+	@docker volume rm $(NAME)-mysql-data 2>/dev/null || true
+	@docker network rm $(NAME) 2>/dev/null || true
 
 destroy:
 	@docker rm -f `docker ps -aq` 2>/dev/null || true

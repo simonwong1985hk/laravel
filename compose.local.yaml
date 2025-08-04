@@ -1,16 +1,13 @@
 services:
   laravel-nginx:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.laravel-nginx.rule=Host(`laravel.localhost`)"
-      - "traefik.http.routers.laravel-nginx.entrypoints=web"
-      - "traefik.http.services.laravel-nginx.loadbalancer.server.port=80"
     container_name: laravel-nginx
     image: laravel-nginx
     build:
       context: .
       dockerfile: Dockerfile.local
       target: nginx
+    ports:
+      - "2011:80"
     volumes:
       - ./:/var/www/html:delegated
       - ./nginx.local.conf:/etc/nginx/conf.d/default.conf:delegated
@@ -19,7 +16,7 @@ services:
     depends_on:
       - laravel-php
     networks:
-      - proxy
+      - custom
 
   laravel-php:
     container_name: laravel-php
@@ -35,7 +32,7 @@ services:
     depends_on:
       - laravel-mysql
     networks:
-      - proxy
+      - custom
 
   laravel-mysql:
     container_name: laravel-mysql
@@ -52,20 +49,17 @@ services:
     restart: always
     tty: true
     networks:
-      - proxy
+      - custom
 
   laravel-phpmyadmin:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.laravel-phpmyadmin.rule=Host(`laravel.db.localhost`)"
-      - "traefik.http.routers.laravel-phpmyadmin.entrypoints=web"
-      - "traefik.http.services.laravel-phpmyadmin.loadbalancer.server.port=80"
     container_name: laravel-phpmyadmin
     image: laravel-phpmyadmin
     build:
       context: .
       dockerfile: Dockerfile.local
       target: phpmyadmin
+    ports:
+      - "2012:80"
     environment:
       PMA_HOST: laravel-mysql
       PMA_USER: ${DB_USERNAME}
@@ -75,29 +69,26 @@ services:
     depends_on:
       - laravel-mysql
     networks:
-      - proxy
+      - custom
 
   laravel-mailpit:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.laravel-mailpit.rule=Host(`laravel.mail.localhost`)"
-      - "traefik.http.routers.laravel-mailpit.entrypoints=web"
-      - "traefik.http.services.laravel-mailpit.loadbalancer.server.port=8025"
     container_name: laravel-mailpit
     image: laravel-mailpit
     build:
       context: .
       dockerfile: Dockerfile.local
       target: mailpit
+    ports:
+      - "2013:8025"
     restart: always
     tty: true
     networks:
-      - proxy
+      - custom
 
 volumes:
   database:
-    name: laravel-db
+    name: laravel-mysql-data
 
 networks:
-  proxy:
-    external: true
+  custom:
+    name: laravel
