@@ -2,8 +2,8 @@
 FROM nginx:alpine AS nginx
 ENV UID=1000
 ENV GID=1000
-ENV USER=laravel
-ENV GROUP=laravel
+ENV USER=filament
+ENV GROUP=filament
 RUN addgroup -g ${GID} --system ${GROUP}
 RUN adduser -u ${UID} --system ${USER} -G ${GROUP} -D -s /bin/sh
 RUN sed -i "s/user  nginx/user ${USER}/g" /etc/nginx/nginx.conf
@@ -18,8 +18,8 @@ RUN echo "upload_max_filesize=${UPLOAD_MAX_FILESIZE}" >> /usr/local/etc/php/conf
 RUN echo "post_max_size=${POST_MAX_SIZE}" >> /usr/local/etc/php/conf.d/uploads.ini
 ENV UID=1000
 ENV GID=1000
-ENV USER=laravel
-ENV GROUP=laravel
+ENV USER=filament
+ENV GROUP=filament
 RUN addgroup -g ${GID} --system ${GROUP}
 RUN adduser -u ${UID} --system ${USER} -G ${GROUP} -D -s /bin/sh
 RUN sed -i "s/user = www-data/user = ${USER}/g" /usr/local/etc/php-fpm.d/www.conf

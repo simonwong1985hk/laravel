@@ -1,12 +1,12 @@
 services:
-  laravel-nginx:
+  filament-nginx:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.laravel-nginx.rule=Host(`laravel.hkit.pro`)"
-      - "traefik.http.routers.laravel-nginx.entrypoints=websecure"
-      - "traefik.http.routers.laravel-nginx.tls.certresolver=myresolver"
-    container_name: laravel-nginx
-    image: laravel-nginx
+      - "traefik.http.routers.filament-nginx.rule=Host(`filament.hkit.pro`)"
+      - "traefik.http.routers.filament-nginx.entrypoints=websecure"
+      - "traefik.http.routers.filament-nginx.tls.certresolver=myresolver"
+    container_name: filament-nginx
+    image: filament-nginx
     build:
       context: .
       dockerfile: Dockerfile.production
@@ -17,13 +17,13 @@ services:
     restart: always
     tty: true
     depends_on:
-      - laravel-php
+      - filament-php
     networks:
       - proxy
 
-  laravel-php:
-    container_name: laravel-php
-    image: laravel-php
+  filament-php:
+    container_name: filament-php
+    image: filament-php
     build:
       context: .
       dockerfile: Dockerfile.production
@@ -33,13 +33,13 @@ services:
     restart: always
     tty: true
     depends_on:
-      - laravel-mysql
+      - filament-mysql
     networks:
       - proxy
 
-  laravel-mysql:
-    container_name: laravel-mysql
-    image: laravel-mysql
+  filament-mysql:
+    container_name: filament-mysql
+    image: filament-mysql
     build:
       context: .
       dockerfile: Dockerfile.production
@@ -54,30 +54,30 @@ services:
     networks:
       - proxy
 
-  laravel-phpmyadmin:
+  filament-phpmyadmin:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.laravel-phpmyadmin.rule=Host(`laravel.db.hkit.pro`)"
-      - "traefik.http.routers.laravel-phpmyadmin.entrypoints=websecure"
-      - "traefik.http.routers.laravel-phpmyadmin.tls.certresolver=myresolver"
-    container_name: laravel-phpmyadmin
-    image: laravel-phpmyadmin
+      - "traefik.http.routers.filament-phpmyadmin.rule=Host(`filament.db.hkit.pro`)"
+      - "traefik.http.routers.filament-phpmyadmin.entrypoints=websecure"
+      - "traefik.http.routers.filament-phpmyadmin.tls.certresolver=myresolver"
+    container_name: filament-phpmyadmin
+    image: filament-phpmyadmin
     build:
       context: .
       dockerfile: Dockerfile.production
       target: phpmyadmin
     environment:
-      PMA_HOST: laravel-mysql
+      PMA_HOST: filament-mysql
     restart: always
     tty: true
     depends_on:
-      - laravel-mysql
+      - filament-mysql
     networks:
       - proxy
 
 volumes:
   database:
-    name: laravel-db
+    name: filament-db
 
 networks:
   proxy:
