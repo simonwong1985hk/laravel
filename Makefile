@@ -1,6 +1,6 @@
 include .env
 
-.PHONY: me own mu local production list php down destroy
+.PHONY: me own mu local production list php down destroy cert
 
 NAME = $(shell echo $(APP_NAME) | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
 
@@ -61,3 +61,7 @@ destroy:
 	@docker rmi -f `docker images -q` 2>/dev/null || true
 	@docker volume rm `docker volume ls -q` 2>/dev/null || true
 	@docker network rm `docker network ls -q` 2>/dev/null || true
+
+cert:
+	@mkdir -p certs
+	@openssl req -x509 -nodes -days 365 -newkey rsa:2048 -sha256 -out certs/localhost.crt -keyout certs/localhost.key -subj '/CN=localhost' -extensions EXT -config certs/openssl.cnf
